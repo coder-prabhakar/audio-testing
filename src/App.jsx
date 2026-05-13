@@ -8,11 +8,7 @@ function App() {
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
     const handleMicButtonPressAndHold = () => { 
-        // SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
-        SpeechRecognition.startListening({
-    continuous: false,
-    language: 'en-IN'
-});
+        SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
     };
 
     const handleMicButtonLeave = () => {
@@ -37,9 +33,9 @@ function App() {
         }
     };
 
-    // useEffect(() => {
-    //     requestMicPermission();
-    // }, []);
+    useEffect(() => {
+        requestMicPermission();
+    }, []);
     
     return (
         <section className="w-full p-4 grid gap-4 h-dvh" style={{gridTemplateRows: "1fr auto auto"}}>
