@@ -59,23 +59,14 @@ function App() {
     // START LISTENING
     // =========================
     const handleMicButtonPressAndHold = async () => {
-        let permission = micPermission;
-
-        // First check latest permission state
-        permission = await checkMicPermission();
-
-        // If not granted then ask permission
-        if (permission !== "granted") {
-            const granted = await requestMicPermission();
-
-            // If still not granted stop here
-            if (!granted) return;
+        if (micPermission !== "granted") {
+            await requestMicPermission();
+        } else {
+            SpeechRecognition.startListening({
+                continuous: true,
+                language: "en-IN",
+            });
         }
-
-        SpeechRecognition.startListening({
-            continuous: true,
-            language: "en-IN",
-        });
     };
 
     const handleMicButtonLeave = () => {
@@ -97,6 +88,10 @@ function App() {
             </div>
         );
     }
+
+    useEffect(() => {
+        checkMicPermission();
+    }, [])
     
     return (
         <section className="w-full p-4 grid gap-4 h-dvh" style={{gridTemplateRows: "1fr auto auto"}}>
