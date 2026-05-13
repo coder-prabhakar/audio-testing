@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaMicrophoneLines } from "react-icons/fa6";
 import { LuSendHorizontal, LuTrash2 } from "react-icons/lu";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
@@ -7,8 +7,75 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 function App() {
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-    const handleMicButtonPressAndHold = () => { 
-        SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
+    const [micPermission, setMicPermission] = useState("prompt");
+
+    // =========================
+    // CHECK MICROPHONE PERMISSION
+    // =========================
+    const checkMicPermission = async () => {
+        try {
+            const result = await navigator.permissions.query({
+                name: "microphone",
+            });
+
+            setMicPermission(result.state);
+
+            // Permission state change listener
+            result.onchange = () => {
+                setMicPermission(result.state);
+            };
+
+            return result.state;
+        } catch (error) {
+            console.log(error);
+            return "prompt";
+        }
+    };
+
+    // =========================
+    // REQUEST MICROPHONE PERMISSION
+    // =========================
+    const requestMicPermission = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({
+                audio: true,
+            });
+
+            setMicPermission("granted");
+
+            console.log("Microphone permission granted");
+
+            return true;
+        } catch (error) {
+            setMicPermission("denied");
+
+            console.log("Microphone permission denied", error);
+
+            return false;
+        }
+    };
+
+    // =========================
+    // START LISTENING
+    // =========================
+    const handleMicButtonPressAndHold = async () => {
+        let permission = micPermission;
+
+        // First check latest permission state
+        permission = await checkMicPermission();
+
+        // If not granted then ask permission
+        if (permission !== "granted") {
+            const granted = await requestMicPermission();
+
+            // If still not granted stop here
+            if (!granted) return;
+        }
+
+        SpeechRecognition.startListening({
+            continuous: true,
+            language: "en-IN",
+        });
     };
 
     const handleMicButtonLeave = () => {
@@ -23,19 +90,13 @@ function App() {
 
     };
 
-    const requestMicPermission = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            console.log("Microphone permission granted");
-        } catch (error) {
-            console.log("Microphone permission denied", error);
-        }
-    };
-
-    useEffect(() => {
-        requestMicPermission();
-    }, []);
+    if (!browserSupportsSpeechRecognition) {
+        return (
+            <div className="p-5">
+                Browser doesn't support speech recognition
+            </div>
+        );
+    }
     
     return (
         <section className="w-full p-4 grid gap-4 h-dvh" style={{gridTemplateRows: "1fr auto auto"}}>
@@ -45,10 +106,6 @@ function App() {
                 rows={5}
                 className="w-full border-none outline-none resize-none hide-scrollbar bg-white rounded-lg p-3 text-sm leading-4.5 overflow-hidden" 
             />
-
-            <button onClick={requestMicPermission}>
-                Allow Microphone
-            </button>
 
             <div className="relative w-full flex items-center justify-around">
                 <button 
