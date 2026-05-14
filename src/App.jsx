@@ -98,7 +98,7 @@ function App() {
             <textarea 
                 value={transcript} 
                 readOnly
-                placeholder='Listening...'
+                placeholder='Listening... 5'
                 rows={5}
                 className="w-full border-none outline-none resize-none hide-scrollbar bg-white rounded-lg p-3 text-sm leading-4.5 overflow-hidden" 
             />
