@@ -97,6 +97,7 @@ function App() {
         <section className="w-full p-4 grid gap-4 h-dvh" style={{gridTemplateRows: "1fr auto auto"}}>
             <textarea 
                 value={transcript} 
+                readOnly
                 placeholder='Listening...'
                 rows={5}
                 className="w-full border-none outline-none resize-none hide-scrollbar bg-white rounded-lg p-3 text-sm leading-4.5 overflow-hidden" 
@@ -114,11 +115,8 @@ function App() {
                     className={`w-18 h-18 rounded-full bg-purple-800 flex items-center justify-center shadow-xs cursor-pointer ${
                         listening ? "animate-[micPulse_1s_infinite]" : ""
                     }`}
-                    onMouseDown={handleMicButtonPressAndHold}
-                    onMouseUp={handleMicButtonLeave}
-                    onMouseLeave={handleMicButtonLeave}
-                    onTouchStart={handleMicButtonPressAndHold}
-                    onTouchEnd={handleMicButtonLeave}
+                    onPointerDown={handleMicButtonPressAndHold}
+                    onPointerUp={handleMicButtonLeave}
                 >
                     <FaMicrophoneLines className="text-3xl text-white"/>
                 </button>
