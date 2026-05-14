@@ -63,7 +63,7 @@ function App() {
             await requestMicPermission();
         } else {
             SpeechRecognition.startListening({
-                continuous: false,
+                continuous: true,
                 language: "en-IN",
             });
         }
@@ -83,7 +83,7 @@ function App() {
 
     if (!browserSupportsSpeechRecognition) {
         return (
-            <div className="p-5">
+            <div className="p-7">
                 Browser doesn't support speech recognition
             </div>
         );
@@ -98,7 +98,7 @@ function App() {
             <textarea 
                 value={transcript} 
                 readOnly
-                placeholder='Listening... 6'
+                placeholder='Listening... 5'
                 rows={5}
                 className="w-full border-none outline-none resize-none hide-scrollbar bg-white rounded-lg p-3 text-sm leading-4.5 overflow-hidden" 
             />
