@@ -1,63 +1,15 @@
-import { useEffect, useState } from "react";
 import { FaMicrophoneLines } from "react-icons/fa6";
 import { LuSendHorizontal, LuTrash2 } from "react-icons/lu";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+
+import { useMicPermission } from "./useMicPermission";
 
 
 function App() {
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-    const [micPermission, setMicPermission] = useState("prompt");
+    const { micPermission, requestMicPermission } = useMicPermission();
 
-    // =========================
-    // CHECK MICROPHONE PERMISSION
-    // =========================
-    const checkMicPermission = async () => {
-        try {
-            const result = await navigator.permissions.query({
-                name: "microphone",
-            });
-
-            setMicPermission(result.state);
-
-            // Permission state change listener
-            result.onchange = () => {
-                setMicPermission(result.state);
-            };
-
-            return result.state;
-        } catch (error) {
-            console.log(error);
-            return "prompt";
-        }
-    };
-
-    // =========================
-    // REQUEST MICROPHONE PERMISSION
-    // =========================
-    const requestMicPermission = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({
-                audio: true,
-            });
-
-            setMicPermission("granted");
-
-            console.log("Microphone permission granted");
-
-            return true;
-        } catch (error) {
-            setMicPermission("denied");
-
-            console.log("Microphone permission denied", error);
-
-            return false;
-        }
-    };
-
-    // =========================
-    // START LISTENING
-    // =========================
     const handleMicButtonPressAndHold = async () => {
         if (micPermission !== "granted") {
             await requestMicPermission();
@@ -88,17 +40,13 @@ function App() {
             </div>
         );
     }
-
-    useEffect(() => {
-        checkMicPermission();
-    }, [])
     
     return (
         <section className="w-full p-4 grid gap-4 h-dvh" style={{gridTemplateRows: "1fr auto auto"}}>
             <textarea 
                 value={transcript} 
                 readOnly
-                placeholder='Listening... 5'
+                placeholder='Listening... 8'
                 rows={5}
                 className="w-full border-none outline-none resize-none hide-scrollbar bg-white rounded-lg p-3 text-sm leading-4.5 overflow-hidden" 
             />
